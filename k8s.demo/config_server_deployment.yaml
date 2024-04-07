@@ -1,0 +1,37 @@
+apiVersion : apps/v1
+kinhd: Deployment
+metadata:
+  name: config-server-app
+spec:
+  selector:
+    meatchLabels: 
+      app: config-server-app
+  template:
+    selectors:
+      labels:
+        app: config-server-app
+    spec: 
+      containers:
+      - name: onfig-server-app
+        image: nhlinh2207/configserver:1
+        ports:
+        - containerPort: 9296
+        env:
+          - name: EUREKA_SERVER_ADDRESS
+            valueFrom:
+              configMapKeyRef:
+                key: eureka-service-address
+                name: eureka-cm
+
+------------------------------
+
+apiVersion: v1
+kind: Servce
+metadata: 
+  name: config-server-svc
+spec:
+  selector:
+    app: config-server-app
+  ports:
+  - port: 80
+    targerPort: 9296

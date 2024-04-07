@@ -1,0 +1,48 @@
+apiVersion : apps/v1
+kinhd: StatefulSet
+metadata:
+  name: eureka
+spec:
+  selector:
+    metchLabels:
+      app: eureka  # Mọi Pod có nhãn là eureka đều được quản lý bởi deployment này
+  serviceName: "eureka"
+  replicas: 1
+  template:   # Define pod
+    metadata:
+      labels:
+        app: eureka
+    spec:
+      containers:
+       - name: eureka
+         image: nhlinh2207/serviceregistry:1
+         pprts:
+           - containerPort: 8761
+
+-----------------------
+# Đây là 1 internal service dùng để kết nối với các ứng dụng khác 
+apiVersion: v1
+kind: Service
+metadata: 
+  name: eureka
+spec:
+  clusterIP: None  # Các pod khác trong cụm có thể truy cập trực tiếp vào pod này mà ko cần thông qua IP của cụm
+  selector:
+    app: eureka
+  ports:
+    - port: 8761
+      name: eureka
+
+-------------
+# Đây là external service , dùng để truy cập vào service-registry từ môi trường bên ngoài cluster
+apiVersion: v1
+kind: Service
+metadata: 
+  name: eureka-lb
+spec:
+  type: NodePort
+  selector:
+    app: eureka
+  ports:
+    - port: 80
+      targetPort: 8761

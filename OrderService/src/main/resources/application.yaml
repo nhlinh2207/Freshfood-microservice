@@ -1,0 +1,53 @@
+
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/microOrder}
+    username: ${DB_USER:root}
+    password: ${DB_PASS:fireice22072001}
+    driverClassname: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL57InnoDBDialect
+    hibernate:
+      ddl-auto: update
+  application:
+    name: ORDER-SERVICE
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:9296} # Ket noi Config Server
+#  Kafka
+  kafka:
+    bootstrap-servers: 192.168.25.128:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topic:
+      name: order_topic
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_REAML_URL:http://192.168.25.128:8080/realms/Micro-Realm}/protocol/openid-connect/certs
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      external:
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50 # Nếu số lần gọi service đạt 50% mà ko có phản hồi thì dừng gọi và về Trạng thái OPEN
+        minimum-number-of-calls: 5  # Số lần gọi tối thiểu để quyết định trạng thái là CLOSED hay OPEN
+        automatic-transition-from-open-to-half-open-enabled: true  #  Cho phép chuyển đổi tự động từ trạng thái "open" sang "half-open" sau khi thời gian chờ ở trạng thái "open" kết thúc.
+        wait-duration-in-open-state: 5s  #  Thời gian chờ khi CircuitBreaker ở trạng thái "open" trước khi chuyển sang trạng thái "half-open". Trong trạng thái "open", tất cả các cuộc gọi đến dịch vụ sẽ bị ngăn chặn.
+        permitted-number-of-calls-in-half-open-state: 3 # Số lượng cuộc gọi được phép trong trạng thái "half-open". Nếu số lượng cuộc gọi thành công trong trạng thái "half-open" đạt đến giá trị này, CircuitBreaker sẽ mở.
+        sliding-window-size: 10 #  Kích thước cửa sổ trượt, được sử dụng để tính toán tỷ lệ thất bại. Đây là số lần gọi cuối cùng được xem xét.
+        sliding-window-type: COUNT_BASED #   Loại cửa sổ trượt. Có thể là "COUNT_BASED" hoặc "TIME_BASED". Trong trường hợp "COUNT_BASED", cửa sổ trượt sẽ dựa trên số lần gọi cuối cùng. Trong trường hợp "TIME_BASED", cửa sổ trượt sẽ dựa trên thời gian.
+
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}

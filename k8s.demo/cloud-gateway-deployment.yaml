@@ -1,0 +1,63 @@
+apiVersion : apps/v1
+kinhd: Deployment
+metadata:
+  name: cloud-gateway-app
+spec:
+  selector:
+    meatchLabels: 
+      app: cloud-gateway-app
+  template:
+    selectors:
+      labels: 
+        app: cloud-gateway-app
+    spec: 
+      containers:
+      - name: cloud-gateway-app
+        image: nhlinh2207/cloudgateway:1
+        ports:
+        - containerPort: 9090
+        env:
+        - name: EUREKA_SERVER_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: eureka-service-address
+              name: eureka-cm
+        - name: CONFIG_SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                key: config-url
+                name: config-cm
+        - name: KEYCLOAK_REAML_URL
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-realm-url
+                name: keycloak-cm
+        - name: KEYCLOAK_CLIENT_ID
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-client-id
+                name: keycloak-cm
+        - name: KEYCLOAK_CLIENT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-client-secret
+                name: keycloak-cm
+        - name: KEYCLOAK_REDIRECT_URL
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-redirect-url
+                name: keycloak-cm
+
+-----------------
+
+apiVersion: v1
+kind: Servce
+metadata: 
+  name: cloud-gateway-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: cloud-gateway-app
+  ports:
+  - port: 80
+    targerPort: 9090

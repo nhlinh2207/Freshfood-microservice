@@ -1,0 +1,46 @@
+apiVersion : apps/v1
+kinhd: Deployment
+metadata:
+  name: order-service-app
+spec:
+  selector:
+    meatchLabels: 
+      app: order-service-app
+  template:
+    selectors:
+      labels:
+        app: order-service-app
+    spec: 
+      containers:
+      - name: order-service-app
+        image: nhlinh2207/orderservice:1
+        ports:
+        - containerPort: 8082
+        env:
+          - name: EUREKA_SERVER_ADDRESS
+            valueFrom:
+              configMapKeyRef:
+                key: eureka-service-address
+                name: eureka-cm
+          - name: CONFIG_SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                key: config-url
+                name: config-cm
+          - name: KEYCLOAK_REAML_URL
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-realm-url
+                name: keycloak-cm
+----------------
+
+apiVersion: v1
+kind: Servce
+metadata: 
+  name: order-service-svc
+spec:
+  selector:
+    app: order-service-app
+  ports:
+  - port: 80
+    targerPort: 8082

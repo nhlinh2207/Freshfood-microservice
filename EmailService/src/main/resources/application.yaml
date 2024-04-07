@@ -1,0 +1,14 @@
+server:
+  port: 8084
+
+spring:
+  rabbitmq:
+    host: 192.168.25.128
+    port: 5672
+    username: linh
+    password: linh
+    exchange: email_exchange
+    queue: email_queue
+    routingKey: email_routing_key
+    jsonQueue: email_json_queue
+    jsonRoutingKey: email_json_routing_key

@@ -1,0 +1,120 @@
+version: '3'
+services:
+  serviceregistry:
+    image: 'nhlinh2207/serviceregistry:1'
+    container_name: serviceRegistry
+    ports:
+    - '8761:8761'
+  configserver:
+    image: 'nhlinh2207/configserver:1'
+    container_name: configServer
+    ports:
+      - '9296:9296'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://configserver:9296/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - serviceregistry
+  cloudgateway:
+    image: 'nhlinh2207/cloudgateway:1'
+    container_name: cloudGateway
+    ports:
+        - '9090:9090'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
+      - CONFIG_SERVER_URL=http://configserver:9296
+      - KEYCLOAK_REAML_URL=http://192.168.25.129:8080/realms/Micro-Realm
+      - KEYCLOAK_CLIENT_ID=Micro-Client-Id
+      - KEYCLOAK_CLIENT_SECRET=zEboDkwiN13llPHsoeDZkESoEkwVb9py
+      - KEYCLOAK_REDIRECT_URL=http://192.168.25.129:9090/login/oauth2/code/gateway
+    depends_on:
+      configserver:
+        condition: service_healthy
+  mysql:
+    image: mysql:8.0.26
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: fireice22072001
+      MYSQL_USER: linh
+      MYSQL_PASSWORD: linh
+    volumes:
+      - /home/sql-file:/docker-entrypoint-initdb.d
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: "exit 0"
+  productService:
+    image: 'nhlinh2207/productservice:1'
+    container_name: productService
+    ports:
+        - '8088:8088'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
+      - CONFIG_SERVER_URL=http://configserver:9296
+      - DB_URL=jdbc:mysql://mysql:3306/microProduct
+      - DB_USER=root
+      - DB_PASS=fireice22072001
+      - KEYCLOAK_REAML_URL=http://192.168.25.129:8080/realms/Micro-Realm
+    depends_on:
+      mysql:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+  paymentService:
+    image: 'nhlinh2207/paymentservice:1'
+    container_name: paymentService
+    ports:
+      - '8087:8087'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
+      - CONFIG_SERVER_URL=http://configserver:9296
+      - DB_URL=jdbc:mysql://mysql:3306/microPayment
+      - DB_USER=root
+      - DB_PASS=fireice22072001
+      - KEYCLOAK_REAML_URL=http://192.168.25.129:8080/realms/Micro-Realm
+    depends_on:
+      mysql:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+  orderService:
+    image: 'nhlinh2207/orderservice:1'
+    container_name: orderService
+    ports:
+      - '8082:8082'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
+      - CONFIG_SERVER_URL=http://configserver:9296
+      - DB_URL=jdbc:mysql://mysql:3306/microOrder
+      - DB_USER=root
+      - DB_PASS=fireice22072001
+      - KEYCLOAK_REAML_URL=http://192.168.25.129:8080/realms/Micro-Realm
+    depends_on:
+      mysql:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+  userService:
+    image: 'nhlinh2207/userservice:1'
+    container_name: userService
+    ports:
+      - '8085:8085'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
+      - CONFIG_SERVER_URL=http://configserver:9296
+      - DB_URL=jdbc:mysql://mysql:3306/microOrder
+      - DB_USER=root
+      - DB_PASS=fireice22072001
+      - KEYCLOAK_CLIENT_SECRET=zEboDkwiN13llPHsoeDZkESoEkwVb9py
+      - KEYCLOAK_URL=http://192.168.25.129:8080/
+      - KEYCLOAK_REALM=Micro-Realm
+      - KEYCLOAK_CLIENT_ID=Micro-Client-Id
+    depends_on:
+      mysql:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy

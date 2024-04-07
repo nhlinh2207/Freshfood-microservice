@@ -1,0 +1,46 @@
+apiVersion : apps/v1
+kinhd: Deployment
+metadata:
+  name: product-service-app
+spec:
+  selector:
+    meatchLabels: 
+      app: product-service-app
+  template:
+    selectors:
+      labels:
+        app: product-service-app
+    spec: 
+      containers:
+      - name: product-service-app
+        image: nhlinh2207/productservice:1
+        ports:
+        - containerPort: 8088
+        env:
+          - name: EUREKA_SERVER_ADDRESS
+            valueFrom:
+              configMapKeyRef:
+                key: eureka-service-address
+                name: eureka-cm
+          - name: CONFIG_SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                key: config-url
+                name: config-cm
+          - name: KEYCLOAK_REAML_URL
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-realm-url
+                name: keycloak-cm
+----------------
+
+apiVersion: v1
+kind: Servce
+metadata: 
+  name: product-service-svc
+spec:
+  selector:
+    app: product-service-app
+  ports:
+  - port: 80
+    targerPort: 8088

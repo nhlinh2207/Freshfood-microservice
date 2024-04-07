@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eureka-cm
+data:
+  eureka-service-address: "http://eureka-0.eureka:8761/eureka"
+
+# eureka-0 là lấy serviceName và thứ tự của nó
+# .euraka là tên của non-cluster-ip service
+
+-------------------
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-cm
+data:
+  config-url: "http://config-server-svc"
+
+------------------
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-cm
+data:
+  keycloak-realm: "Micro-Realm"
+  keycloak-client-id: "Micro-Client-Id"
+  keycloak-url: "http://192.168.25.128:8080/"
+  keycloak-client-secret: "CFI3SEOp6wB3wKdJLmU7UWqEXGpgxkvF"
+  keycloak-realm-url: "http://192.168.25.128:8080/realms/Micro-Realm"
+  keycloak-redirect-url: "http://localhost:9090/login/oauth2/code/gateway"
