@@ -9,9 +9,10 @@ spec:
     - ReadWriteOnce
   storageClassName: manual
   hostPath:
-#    path: "/mnt/data"  # - for Unix/Linux
-     path: "/run/desktop/mnt/host/c/temp/testfiles"
-     type: DirectoryOrCreate
+    path: "/mnt/data"  # - for Unix/Linux
+    #  path: "/run/desktop/mnt/host/c/temp/testfiles"  # Windows
+    type: DirectoryOrCreate
+
 ---
 
 apiVersion: v1
@@ -26,7 +27,7 @@ spec:
   accessModes:
     - ReadWriteOnce
 
-------
+---
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -54,16 +55,16 @@ spec:
           name: mysql
         volumeMounts:
         - name: mysql-initdb
-          mountPath: /docker-entrypoint-initdb.d
+          mountPath: /docker-entrypoint-initdb.d  # Đường dẫn trong container để khởi tạo db với file .sql
         - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
+          mountPath: /var/lib/mysql  # Trong các container mysql, folder /var/lib/mysql được dùng để lưu dữ liệu
       volumes:
         - name: mysql-initdb
           configMap:
-            name: mysql-initdb-cm
+            name: mysql-initdb-cm # Lấy dữ liệu từ ConfigMap để liên kết với folder /docker-entrypoint-initdb.d nhằm khởi tạo dữ liệu
         - name: mysql-persistent-storage
           persistentVolumeClaim:
-            claimName: mysql-pvc
+            claimName: mysql-pvc  # Liên kết dữ liệu persistent storage với foler /var/lib/mysql để tránh mất dữ liệu khi 1 pod mới được khởi tạo
 
 ---
 
@@ -72,13 +73,14 @@ kind: ConfigMap
 metadata:
   name: mysql-initdb-cm
 data:
-  init.sql: |
+  init.sql:
     CREATE DATABASE IF NOT EXISTS microOrder;
     CREATE DATABASE IF NOT EXISTS microPayment;
     CREATE DATABASE IF NOT EXISTS microProduct;
     CREATE DATABASE IF NOT EXISTS microUser;
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -89,3 +91,4 @@ spec:
     app: mysql
   ports:
   - port: 3306
+  

@@ -1,13 +1,13 @@
 apiVersion : apps/v1
-kinhd: Deployment
+kind: Deployment
 metadata:
   name: config-server-app
 spec:
   selector:
-    meatchLabels: 
+    matchLabels: 
       app: config-server-app
   template:
-    selectors:
+    metadata:
       labels:
         app: config-server-app
     spec: 
@@ -23,10 +23,10 @@ spec:
                 key: eureka-service-address
                 name: eureka-cm
 
-------------------------------
+---
 
 apiVersion: v1
-kind: Servce
+kind: Service
 metadata: 
   name: config-server-svc
 spec:
@@ -34,4 +34,4 @@ spec:
     app: config-server-app
   ports:
   - port: 80
-    targerPort: 9296
+    targetPort: 9296

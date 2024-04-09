@@ -1,14 +1,14 @@
 apiVersion : apps/v1
-kinhd: Deployment
+kind: Deployment
 metadata:
   name: cloud-gateway-app
 spec:
   selector:
-    meatchLabels: 
+    matchLabels: 
       app: cloud-gateway-app
   template:
-    selectors:
-      labels: 
+    metadata:
+      labels:
         app: cloud-gateway-app
     spec: 
       containers:
@@ -23,35 +23,35 @@ spec:
               key: eureka-service-address
               name: eureka-cm
         - name: CONFIG_SERVER_URL
-            valueFrom:
-              configMapKeyRef:
-                key: config-url
-                name: config-cm
+          valueFrom:
+            configMapKeyRef:
+              key: config-url
+              name: config-cm
         - name: KEYCLOAK_REAML_URL
-            valueFrom:
-              configMapKeyRef:
-                key: keycloak-realm-url
-                name: keycloak-cm
+          valueFrom:
+            configMapKeyRef:
+              key: keycloak-realm-url
+              name: keycloak-cm
         - name: KEYCLOAK_CLIENT_ID
-            valueFrom:
-              configMapKeyRef:
-                key: keycloak-client-id
-                name: keycloak-cm
+          valueFrom:
+            configMapKeyRef:
+              key: keycloak-client-id
+              name: keycloak-cm
         - name: KEYCLOAK_CLIENT_SECRET
-            valueFrom:
-              configMapKeyRef:
-                key: keycloak-client-secret
-                name: keycloak-cm
+          valueFrom:
+            configMapKeyRef:
+              key: keycloak-client-secret
+              name: keycloak-cm
         - name: KEYCLOAK_REDIRECT_URL
-            valueFrom:
-              configMapKeyRef:
-                key: keycloak-redirect-url
-                name: keycloak-cm
+          valueFrom:
+            configMapKeyRef:
+              key: keycloak-redirect-url
+              name: keycloak-cm
 
------------------
+---
 
 apiVersion: v1
-kind: Servce
+kind: Service
 metadata: 
   name: cloud-gateway-app
 spec:
@@ -60,4 +60,4 @@ spec:
     app: cloud-gateway-app
   ports:
   - port: 80
-    targerPort: 9090
+    targetPort: 9090

@@ -1,13 +1,13 @@
 apiVersion : apps/v1
-kinhd: Deployment
+kind: Deployment
 metadata:
   name: order-service-app
 spec:
   selector:
-    meatchLabels: 
+    matchLabels: 
       app: order-service-app
   template:
-    selectors:
+    metadata:
       labels:
         app: order-service-app
     spec: 
@@ -27,15 +27,20 @@ spec:
               configMapKeyRef:
                 key: config-url
                 name: config-cm
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: hostname
+                name: mysql-cm
           - name: KEYCLOAK_REAML_URL
             valueFrom:
               configMapKeyRef:
                 key: keycloak-realm-url
                 name: keycloak-cm
-----------------
+---
 
 apiVersion: v1
-kind: Servce
+kind: Service
 metadata: 
   name: order-service-svc
 spec:
@@ -43,4 +48,4 @@ spec:
     app: order-service-app
   ports:
   - port: 80
-    targerPort: 8082
+    targetPort: 8082

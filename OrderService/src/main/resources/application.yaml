@@ -4,7 +4,7 @@ server:
 
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/microOrder}
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/microOrder
     username: ${DB_USER:root}
     password: ${DB_PASS:fireice22072001}
     driverClassname: com.mysql.cj.jdbc.Driver
@@ -28,7 +28,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${KEYCLOAK_REAML_URL:http://192.168.25.128:8080/realms/Micro-Realm}/protocol/openid-connect/certs
+          jwk-set-uri: ${KEYCLOAK_REAML_URL:http://192.168.25.131:8080/realms/Micro-Realm}/protocol/openid-connect/certs
 
 resilience4j:
   circuitbreaker:

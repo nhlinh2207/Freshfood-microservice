@@ -76,16 +76,16 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${KEYCLOAK_REAML_URL:http://192.168.25.128:8080/realms/Micro-Realm}/protocol/openid-connect/certs
+          jwk-set-uri: ${KEYCLOAK_REAML_URL:http://192.168.25.131:8080/realms/Micro-Realm}/protocol/openid-connect/certs
       client:
         provider:
           my-keycloak-provider:
-            issuer-uri: ${KEYCLOAK_REAML_URL:http://192.168.25.128:8080/realms/Micro-Realm}
+            issuer-uri: ${KEYCLOAK_REAML_URL:http://192.168.25.131:8080/realms/Micro-Realm}
         registration:
           gateway:
             provider: my-keycloak-provider
             client-id: ${KEYCLOAK_CLIENT_ID:Micro-Client-Id}
-            client-secret: ${KEYCLOAK_CLIENT_SECRET:CFI3SEOp6wB3wKdJLmU7UWqEXGpgxkvF}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET:2eeJe1p3tOHpW2UOr6hVdzeciR7VEEKm}
             authorization-grant-type: authorization_code
             redirect-uri: ${KEYCLOAK_REDIRECT_URL:http://localhost:9090/login/oauth2/code/gateway}
             scope: openid  # Prevent invalid credential error

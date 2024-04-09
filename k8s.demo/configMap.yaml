@@ -8,7 +8,7 @@ data:
 # eureka-0 là lấy serviceName và thứ tự của nó
 # .euraka là tên của non-cluster-ip service
 
--------------------
+---
 
 apiVersion: v1
 kind: ConfigMap
@@ -17,8 +17,16 @@ metadata:
 data:
   config-url: "http://config-server-svc"
 
-------------------
+---
 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cm
+data:
+  hostname: "mysql-0.mysql"
+
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -26,7 +34,7 @@ metadata:
 data:
   keycloak-realm: "Micro-Realm"
   keycloak-client-id: "Micro-Client-Id"
-  keycloak-url: "http://192.168.25.128:8080/"
-  keycloak-client-secret: "CFI3SEOp6wB3wKdJLmU7UWqEXGpgxkvF"
-  keycloak-realm-url: "http://192.168.25.128:8080/realms/Micro-Realm"
-  keycloak-redirect-url: "http://localhost:9090/login/oauth2/code/gateway"
+  keycloak-url: "http://192.168.25.131:8080/"
+  keycloak-client-secret: "2eeJe1p3tOHpW2UOr6hVdzeciR7VEEKm"
+  keycloak-realm-url: "http://192.168.25.131:8080/realms/Micro-Realm"
+  keycloak-redirect-url: "http://localhost:3001/login/oauth2/code/gateway"

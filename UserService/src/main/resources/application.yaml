@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/microUser}
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/microUser
     username: ${DB_USER:root}
     password: ${DB_PASS:fireice22072001}
     driverClassname: com.mysql.cj.jdbc.Driver
@@ -18,8 +18,8 @@ spring:
 
 keycloak:
   credentials:
-    secret: ${KEYCLOAK_CLIENT_SECRET:CFI3SEOp6wB3wKdJLmU7UWqEXGpgxkvF}
-  auth-server-url: ${KEYCLOAK_URL:http://192.168.25.128:8080/}
+    secret: ${KEYCLOAK_CLIENT_SECRET:2eeJe1p3tOHpW2UOr6hVdzeciR7VEEKm}
+  auth-server-url: ${KEYCLOAK_URL:http://192.168.25.131:8080/}
   realm: ${KEYCLOAK_REALM:Micro-Realm}
   resource: ${KEYCLOAK_CLIENT_ID:Micro-Client-Id}
   public-client: true
