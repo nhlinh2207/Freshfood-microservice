@@ -1,0 +1,65 @@
+def vTeleUrl = 'https://api.telegram.org/bot6639158748:AAHcLvmN_EiM_TXbtj3qscOcvH4EWmYt1cg'
+def linkEmoji = 'https://apps.timwhitlock.info/emoji/tables/unicode'
+def vTeleChatId = '-1001968668059'
+def vCurrentStage = ''
+def vTeleMsg = ''
+def moonIcon = '%F0%9F%8C%9B'
+def pumpkinIcon = '%F0%9F%8E%83'
+def snailIcon = '%F0%9F%90%8C'
+def successSymbol = '%E2%9C%85'
+def warningSymbol = '%E2%9D%93'
+def errorSymbol = '%E2%9D%8C'
+
+pipeline {
+    agent any
+    environment {
+         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+         DOCKER_HUB_USERNAME = 'nhlinh2207'
+         DOCKER_IMAGE_NAME = 'serviceregistry'
+         DOCKER_IMAGE_TAG = '1'
+    }
+    stages {
+        stage('Check Git') {
+           steps{
+                script{
+                      vCurrentStage = "[1] Deploy site test ${successSymbol}"
+                      def GIT_COMMIT_MSG =  sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
+                      def GIT_COMMIT_AUTHOR = sh (script: 'git log -1 --pretty=%cn ${GIT_COMMIT}', returnStdout: true).trim()
+                      vCurrentStage = "Deploy site test ${successSymbol} --- Người thực hiện: ${GIT_COMMIT_AUTHOR} --- Commit message ${GIT_COMMIT_MSG}"
+                      sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vCurrentStage}'"
+                }
+           }
+        }
+        stage('Build and push docker image') {
+           steps{
+                script{
+                     vCurrentStage = "[2] Build Docker image:  ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME}  ${moonIcon}"
+                     sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vCurrentStage}'"
+                     sh "docker build -t ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+
+                     vCurrentStage = "[3] ogin Dockerhub với username ${DOCKER_HUB_USERNAME} ${snailIcon}"
+                     sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vCurrentStage}'"
+                     sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+
+                     vCurrentStage = "[4] Push image ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME} lên DockerHub ${pumpkinIcon}"
+                     sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vCurrentStage}'"
+                     sh "docker push -t ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                }
+           }
+        }
+    }
+    post{
+    	failure {
+    		script{
+    			vTeleMsg = "${successSymbol} Deploy site test thành công"
+                sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vTeleMsg}'"
+    		}
+    	}
+    	success {
+    		script{
+    			vTeleMsg = "${errorSymbol} Deploy site test thất bại"
+                sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vTeleMsg}'"
+    		}
+    	}
+    }
+}

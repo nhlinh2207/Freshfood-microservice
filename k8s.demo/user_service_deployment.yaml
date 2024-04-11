@@ -1,0 +1,67 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: user-service-app
+spec:
+  selector:
+    matchLabels: 
+      app: user-service-app
+  template:
+    metadata:
+      labels:
+        app: user-service-app
+    spec: 
+      containers:
+      - name: user-service-app
+        image: nhlinh2207/userservice:1
+        ports:
+        - containerPort: 8085
+        env:
+          - name: EUREKA_SERVER_ADDRESS
+            valueFrom:
+              configMapKeyRef:
+                key: eureka-service-address
+                name: eureka-cm
+          - name: CONFIG_SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                key: config-url
+                name: config-cm
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: hostname
+                name: mysql-cm
+          - name: KEYCLOAK_CLIENT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-client-secret
+                name: keycloak-cm
+          - name: KEYCLOAK_URL
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-url
+                name: keycloak-cm
+          - name: KEYCLOAK_REALM
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-realm
+                name: keycloak-cm
+          - name: KEYCLOAK_CLIENT_ID
+            valueFrom:
+              configMapKeyRef:
+                key: keycloak-client-id
+                name: keycloak-cm
+
+---
+
+apiVersion: v1
+kind: Service
+metadata: 
+  name: user-service-svc
+spec:
+  selector:
+    app: user-service-app
+  ports:
+  - port: 80
+    targetPort: 8085
