@@ -51,13 +51,13 @@ pipeline {
     post{
     	failure {
     		script{
-    			vTeleMsg = "${successSymbol} Deploy site test thành công"
+    			vTeleMsg = "${errorSymbol} Deploy site test thất bại"
                 sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vTeleMsg}'"
     		}
     	}
     	success {
     		script{
-    			vTeleMsg = "${errorSymbol} Deploy site test thất bại"
+    			vTeleMsg = "${successSymbol} Deploy site test thành công"
                 sh "curl -s -X POST '${vTeleUrl}/sendMessage' -d 'chat_id=${vTeleChatId}' -d 'text=${vTeleMsg}'"
     		}
     	}
